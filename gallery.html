@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hamze | Portfolio</title>
+<link rel="stylesheet" href="style.css" />
+<!-- Panzoom for zoomable images in popup -->
+<script src="https://unpkg.com/@panzoom/panzoom/dist/panzoom.min.js"></script>
+
+<style>
+  /* Basic reset and styling */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0; padding: 0;
+    background: #f9f9f9;
+    color: #333;
+  }
+  h1 {
+    text-align: center;
+    margin: 1rem 0;
+  }
+
+  /* Container */
+  .container {
+    max-width: 900px;
+    margin: auto;
+    padding: 1rem;
+  }
+
+  /* Upload form */
+  #uploadForm {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    align-items: center;
+    justify-content: center;
+  }
+  #uploadForm input, #uploadForm button, #uploadForm select {
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+  #fileInput {
+    flex-grow: 2;
+  }
+  #titleInput, #categoryInput {
+    flex-grow: 1;
+    min-width: 120px;
+  }
+  #uploadBtn {
+    background: #007bff;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  #uploadBtn:hover {
+    background: #22a45a;
+  }
+
+  /* Controls bar */
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .controls > * {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    border: none;
+  }
+  button.download-selected {
+    background: #28a745;
+    color: white;
+  }
+  button.delete-selected {
+    background: #dc3545;
+    color: white;
+  }
+  button.pause, button.resume, button.cancel {
+    background: #ffc107;
+    color: #333;
+  }
+  button.pause {
+    display: inline-block;
+  }
+  button.resume {
+    display: none;
+  }
+
+  /* Search and filter */
+  .filters, .filterscategory {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  .filters input, .filters select {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+
+  /* Gallery grid */
+  #gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(150px,1fr));
+    gap: 1rem;
+  }
+  .item {
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+    position: relative;
+  }
+  .item.dragging {
+    opacity: 0.5;
+  }
+  .item img, .item video, .item object {
+    max-width: 100%;
+    max-height: 120px;
+    border-radius: 4px;
+    cursor: pointer;
+    object-fit: cover;
+  }
+  .item h4 {
+    margin: 0.5rem 0 0.3rem 0;
+    font-size: 1rem;
+    text-align: center;
+    word-break: break-word;
+  }
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 0.85rem;
+    color: #666;
+  }
+  .actions small {
+    align-self: center;
+  }
+  button.download-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.3rem;
+    color: #007bff;
+  }
+  button.download-btn:hover {
+    color: #0a12a1;
+  }
+  input.select-checkbox {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  /* Toast notification */
+  #toast {
+    position: fixed;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 0.7rem 1rem;
+    border-radius: 4px;
+    display: none;
+    z-index: 10001;
+  }
+
+  /* Popup overlay */
+  .popup-overlay {
+    display: none;
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.85);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+  }
+  .popup-overlay.flex {
+    display: flex;
+  }
+  .popup-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    background: #000;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 0 15px #000;
+  }
+  .popup-close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: red;
+    border: none;
+    font-size: 1.5rem;
+    color: white;
+    cursor: pointer;
+    z-index: 10;
+  }
+  #popup-media video, #popup-media img {
+    max-width: 100vw;
+    max-height: 100vh;
+    display: block;
+  }
+
+  /* Zoom container for image */
+  #zoom-container {
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    background: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Drag and drop highlight */
+  #dropZone {
+    border: 2px dashed #007bff;
+    padding: 1rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    color: #007bff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  #dropZone.dragover {
+    background-color: #cce5ff;
+  }
+
+  /* Progress bar */
+  #progressBar {
+    display: none;
+    width: 100%;
+    background-color: #816363;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    height: 20px;
+  }
+  #progressFill {
+    height: 100%;
+    width: 0;
+    background-color: #28a745;
+    transition: width 0.3s ease;
+  }
+
+  /* Export spinner */
+  #exportSpinner {
+    display: none;
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10002;
+    background: white;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    text-align: center;
+  }
+  .loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #007bff;
+    border-radius: 50%;
+    width: 30px; height: 30px;
+    animation: spin 1s linear infinite;
+    margin: auto;
+  }
+  @keyframes spin {
+    0% {transform: rotate(0deg);}
+    100% {transform: rotate(360deg);}
+  }
+</style>
+</head>
+<body>
+<header class="top-header">
+    <div class="nav-bar">
+      <div class="logo-text">
+        <img src="Images/logo/H.png" alt="logo" class="logo-img" />
+      </div>
+      <button class="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="main-navigation">
+        <span aria-hidden="true">&#9776;</span>
+      </button>
+      <div class="nav-wrapper">
+        <nav class="nav-menu" id="main-navigation" role="navigation" aria-label="Main navigation">
+          <a href="index.html#about">About</a>
+          <a href="index.html#projects">Projects</a>
+          <a href="index.html#skills">Skills</a>
+          <a href="index.html#contact">Contact</a>
+          <a href="index.html#blog">Blog</a>
+          <a href="gallery.html">Gallery</a>
+          <span class="hamburger-auth" id="toggle-auth">👤 Login</span>
+        </nav>
+        <button id="theme-toggle" aria-label="Toggle light or dark mode" title="Toggle Theme">🌙</button>
+        <select id="theme-select" aria-label="Select theme">
+          <option value="auto">🌓 System</option>
+          <option value="dark">🌙 Dark</option>
+          <option value="light">☀️ Light</option>
+          <option value="blue">🔵 Blue</option>
+          <option value="green">🟢 Green</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <section class="auth-form" id="auth-form">
+    <h3>Login</h3>
+    <form id="login-form">
+      <input type="text" name="username" placeholder="Username" required />
+      <div class="toggle-password">
+        <input type="password" name="password" placeholder="Password" id="login-password" required />
+        <button type="button" onclick="togglePasswordVisibility('login-password', this)">👁</button>
+      </div>
+      <button type="submit">Login</button>
+      <p id="login-message"></p>
+    </form>
+
+    <hr />
+    <h3>Signup</h3>
+    <form id="signup-form">
+      <input type="text" name="newUsername" placeholder="New Username" required />
+      <div class="toggle-password">
+        <input type="password" name="newPassword" placeholder="New Password" id="signup-password" required />
+        <button type="button" onclick="togglePasswordVisibility('signup-password', this)">👁</button>
+      </div>
+      <button type="submit">Sign Up</button>
+      <p id="signup-message"></p>
+    </form>
+  </section>
+<div class="container">
+  <h1>My Media Gallery</h1>
+<form id="uploadForm" onsubmit="event.preventDefault(); uploadFiles();">
+  <input type="file" id="fileInput" multiple accept="image/*,video/*,.pdf,.doc,.docx,.ppt" capture />
+  <input type="text" id="titleInput" placeholder="Base Title" required />
+  <button id="uploadBtn" type="submit">Upload</button>
+  <!-- Optional buttons to trigger file picker or folder -->
+  <button type="button" onclick="document.getElementById('fileInput').click()">Upload from Device</button>
+  <button type="button" onclick="captureFromCamera()">Capture with Camera</button>
+</form>
+
+  <!-- Dropzone for drag and drop -->
+  <div id="dropZone">Drag & Drop files here to upload</div>
+
+  <!-- Search and Filter -->
+  <div class="filters">
+    <input type="search" id="search" placeholder="Search by title..." />
+    <select id="filterCategory">
+      <option value="">All Categories</option>
+      <option value="image">Image</option>
+      <option value="video">Video</option>
+      <option value="document">File</option>
+    </select>
+
+    <select id="sortOptions">
+      <option value="">Sort By</option>
+      <option value="title">Title (A-Z)</option>
+      <option value="date">Date (Newest)</option>
+    </select>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button class="download-selected" onclick="downloadSelected()">Download Selected ⬇️</button>
+    <button class="delete-selected" onclick="deleteSelected()">Delete Selected 🗑️</button>
+    <button class="pause" id="pauseBtn" onclick="pauseExporting()">Pause Export ⏸️</button>
+    <button class="resume" id="resumeBtn" onclick="resumeExporting()">Resume Export ▶️</button>
+    <button class="cancel" id="cancelExport">Cancel Export ❌</button>
+  </div>
+
+  <!-- Progress Bar -->
+  <div id="progressBar">
+    <div id="progressFill"></div>
+  </div>
+
+  <!-- Gallery Grid -->
+  <div id="gallery" aria-live="polite" aria-label="Media gallery"></div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Popup -->
+<div id="popup" class="popup-overlay" aria-modal="true" role="dialog" aria-labelledby="popupTitle" aria-describedby="popupDesc">
+  <div class="popup-content">
+    <button class="popup-close" onclick="closePopup()" aria-label="Close popup">✖</button>
+    <div id="popup-media"></div>
+  </div>
+</div>
+
+<!-- Export Spinner -->
+<div id="exportSpinner">
+  <div class="loader"></div>
+  <p>Exporting... Please wait</p>
+</div>
+
+<script>
+      function togglePasswordVisibility(id, btn) {
+      const input = document.getElementById(id);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁';
+      }
+    }
+
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+
+    document.getElementById('toggle-auth').addEventListener('click', () => {
+      document.getElementById('auth-form').classList.toggle('auth-active');
+    });
+
+    loginForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const username = this.username.value;
+      const password = this.password.value;
+
+      try {
+        const res = await fetch('http://localhost:3000/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const result = await res.json();
+        const msg = document.getElementById('login-message');
+
+        if (res.ok) {
+          localStorage.setItem('authUser', username);
+          msg.textContent = 'Login successful!';
+          msg.style.color = 'green';
+        } else {
+          msg.textContent = result.message || 'Login failed.';
+          msg.style.color = 'red';
+        }
+      } catch (err) {
+        document.getElementById('login-message').textContent = 'Server error.';
+        console.error(err);
+      }
+    });
+
+    signupForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const username = this.newUsername.value;
+      const password = this.newPassword.value;
+
+      try {
+        const res = await fetch('http://localhost:3000/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const result = await res.json();
+        const msg = document.getElementById('signup-message');
+
+        if (res.ok) {
+          msg.textContent = 'Signup successful! You can now log in.';
+          msg.style.color = 'green';
+        } else {
+          msg.textContent = result.message || 'Signup failed.';
+          msg.style.color = 'red';
+        }
+      } catch (err) {
+        document.getElementById('signup-message').textContent = 'Server error.';
+        console.error(err);
+      }
+    });
+  function getCategoryFromType(type) {
+  if (type.startsWith('image/')) return 'image';
+  if (type.startsWith('video/')) return 'video';
+  if (
+    type.includes('pdf') ||
+    type.includes('msword') ||
+    type.includes('presentation') ||
+    type.includes('document')
+  ) return 'document';
+  return 'other';
+}
+  let galleryData = JSON.parse(localStorage.getItem('galleryData') || '[]');
+
+  const gallery = document.getElementById('gallery');
+  const fileInput = document.getElementById('fileInput');
+  const titleInput = document.getElementById('titleInput');
+  const categoryInput = document.getElementById('categoryInput');
+  const searchInput = document.getElementById('search');
+  const filterCategory = document.getElementById('filterCategory');
+  const dropZone = document.getElementById('dropZone');
+  const toast = document.getElementById('toast');
+  const popup = document.getElementById('popup');
+  const popupMedia = document.getElementById('popup-media');
+  const progressBar = document.getElementById('progressBar');
+  const progressFill = document.getElementById('progressFill');
+  const exportSpinner = document.getElementById('exportSpinner');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const resumeBtn = document.getElementById('resumeBtn');
+  const cancelExportBtn = document.getElementById('cancelExport');
+
+  let pauseExport = false;
+  let cancelExport = false;
+
+  function showToast(message, duration = 3000) {
+    toast.textContent = message;
+    toast.style.display = 'block';
+    setTimeout(() => {
+      toast.style.display = 'none';
+    }, duration);
+  }
+
+  function updateCategoryFilter() {
+  const defaultCategories = ['image', 'video', 'document'];
+  const customCategories = new Set(galleryData.map(item => item.category).filter(Boolean));
+
+  // Keep default + any new custom categories
+  const combinedCategories = new Set([...defaultCategories, ...customCategories]);
+
+  filterCategory.innerHTML = '<option value="">All Categories</option>' +
+    [...combinedCategories].sort().map(c => `<option value="${c}">${capitalize(c)}</option>`).join('');
+}
+
+// Capitalize first letter of each word
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+function renderGallery() {
+  const searchTerm = searchInput.value.toLowerCase();
+  const selectedCategory = filterCategory.value;
+  const sortBy = document.getElementById('sortOptions').value;
+
+  // Clone and filter galleryData
+  let filteredData = galleryData.filter(item => {
+    if (selectedCategory && item.category !== selectedCategory) return false;
+    if (searchTerm && !item.title.toLowerCase().includes(searchTerm)) return false;
+    return true;
+  });
+
+  // Sort logic
+  if (sortBy === 'title') {
+    filteredData.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (sortBy === 'date') {
+    filteredData.sort((a, b) => b.createdAt - a.createdAt); // Newest first
+  }
+
+  gallery.innerHTML = '';
+  filteredData.forEach((item, index) => {
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.setAttribute('draggable', 'true');
+    el.dataset.index = galleryData.indexOf(item); // Use original index for actions
+
+    let media = '';
+    if (item.type.startsWith('image/')) {
+      media = `<img src="${item.src}" alt="${item.title}" onclick="openPopup('${item.src}', '${item.type}')">`;
+    } else if (item.type.startsWith('video/')) {
+      media = `<video src="${item.src}" controls muted playsinline onclick="openPopup('${item.src}', '${item.type}')"></video>`;
+    } else if (item.category === 'document') {
+      media = `<a href="${item.src}" download="${item.title}" target="_blank" class="document-link">📄 ${item.title}</a>`;
+    } else {
+      media = `<p>Unsupported file</p>`;
+    }
+
+    el.innerHTML = `
+      <input type="checkbox" class="select-checkbox" data-index="${galleryData.indexOf(item)}" aria-label="Select ${item.title}">
+      ${media}
+      <h4>${item.title}</h4>
+      <div class="actions">
+        <small>${item.category || 'Uncategorized'}</small>
+        <button onclick="downloadItem(${galleryData.indexOf(item)})" title="Download ${item.title}" class="download-btn" aria-label="Download ${item.title}">⬇️</button>
+      </div>
+    `;
+
+    gallery.appendChild(el);
+  });
+document.getElementById('sortOptions').addEventListener('change', renderGallery);
+  // update category filter options
+  updateCategoryFilter();
+  addDragAndDrop();
+}
+  function getCategoryFromType(type) {
+  if (type.startsWith('image/')) return 'image';
+  if (type.startsWith('video/')) return 'video';
+  if (
+    type === 'application/pdf' ||
+    type === 'application/msword' ||
+    type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+    type === 'application/vnd.ms-powerpoint' ||
+    type === 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+  ) return 'document';
+  return 'other';
+}
+
+function uploadFiles() {
+  const files = fileInput.files;
+  const baseTitle = titleInput.value.trim();
+  if (!files.length) return showToast("Please select files to upload.");
+  if (!baseTitle) return showToast("Please enter a base title.");
+
+  let uploadedCount = 0;
+  Array.from(files).forEach((file) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      galleryData.push({
+        title: `${baseTitle} - ${new Date().toLocaleString().replace(/[/:]/g, '-')}`,
+        category: getCategoryFromType(file.type),
+        type: file.type,
+        src: e.target.result,
+        createdAt: Date.now()
+      });
+      uploadedCount++;
+      if (uploadedCount === files.length) {
+        localStorage.setItem('galleryData', JSON.stringify(galleryData));
+        renderGallery();
+        showToast("Upload successful.");
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+
+  fileInput.value = '';
+  titleInput.value = '';
+}
+
+  function deleteSelected() {
+    const selectedIndexes = Array.from(document.querySelectorAll('.select-checkbox:checked'))
+      .map(cb => parseInt(cb.dataset.index));
+    if (selectedIndexes.length === 0) return showToast("No items selected.");
+
+    galleryData = galleryData.filter((_, i) => !selectedIndexes.includes(i));
+    localStorage.setItem('galleryData', JSON.stringify(galleryData));
+    renderGallery();
+    showToast("Deleted selected items.");
+  }
+
+  function downloadItem(index) {
+    const item = galleryData[index];
+    fetch(item.src)
+      .then(res => res.blob())
+      .then(blob => {
+        const a = document.createElement("a");
+        const ext = item.type.startsWith('image') ? '.jpg' : '.mp4';
+        const filename = `${item.title.replace(/[^a-z0-9]/gi, '_')}${ext}`;
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      })
+      .catch(() => showToast("Download failed."));
+  }
+
+  async function downloadSelected() {
+    const selectedIndexes = Array.from(document.querySelectorAll('.select-checkbox:checked'))
+      .map(cb => parseInt(cb.dataset.index));
+    if (selectedIndexes.length === 0) return showToast("No items selected.");
+
+    cancelExport = false;
+    pauseExport = false;
+    progressBar.style.display = 'block';
+    exportSpinner.style.display = 'block';
+    progressFill.style.width = '0%';
+
+    const zip = new JSZip();
+    const folder = zip.folder("gallery");
+
+    for (let i = 0; i < selectedIndexes.length; i++) {
+      if (cancelExport) {
+        showToast("Export cancelled.");
+        break;
+      }
+      while (pauseExport) {
+        await new Promise(r => setTimeout(r, 300));
+      }
+      const item = galleryData[selectedIndexes[i]];
+      try {
+        const response = await fetch(item.src);
+        const blob = await response.blob();
+        const ext = item.type.startsWith('image') ? '.jpg' : '.mp4';
+        const filename = `${item.title.replace(/[^a-z0-9]/gi, '_')}_${selectedIndexes[i]}${ext}`;
+        folder.file(filename, blob);
+      } catch {
+        showToast(`Failed to add ${item.title}`);
+      }
+      progressFill.style.width = `${((i + 1) / selectedIndexes.length) * 100}%`;
+    }
+
+    if (!cancelExport) {
+      zip.generateAsync({ type: "blob" }).then(blob => {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "gallery-export.zip";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+      }).catch(err => {
+        console.error("ZIP generation failed:", err);
+      });
+    }
+
+    progressBar.style.display = 'none';
+    exportSpinner.style.display = 'none';
+  }
+
+  function pauseExporting() {
+    pauseExport = true;
+    pauseBtn.style.display = 'none';
+    resumeBtn.style.display = 'inline-block';
+    showToast("Export paused.");
+  }
+
+  function resumeExporting() {
+    pauseExport = false;
+    pauseBtn.style.display = 'inline-block';
+    resumeBtn.style.display = 'none';
+    showToast("Export resumed.");
+  }
+
+  cancelExportBtn.onclick = function () {
+    cancelExport = true;
+    progressBar.style.display = 'none';
+    exportSpinner.style.display = 'none';
+    pauseBtn.style.display = 'inline-block';
+    resumeBtn.style.display = 'none';
+    showToast("Export cancelled.");
+  };
+
+  dropZone.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+  });
+
+  dropZone.addEventListener('dragleave', function (e) {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+  });
+
+  dropZone.addEventListener('drop', function (e) {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    fileInput.files = e.dataTransfer.files;
+    showToast("Files ready for upload. Fill title/category and click Upload.");
+  });
+  searchInput.addEventListener('input', renderGallery);
+  filterCategory.addEventListener('change', renderGallery);
+
+  function addDragAndDrop() {
+    let draggedIndex = null;
+    gallery.querySelectorAll('.item').forEach(item => {
+      item.addEventListener('dragstart', function (e) {
+        draggedIndex = parseInt(this.dataset.index);
+        this.classList.add('dragging');
+      });
+      item.addEventListener('dragend', function (e) {
+        this.classList.remove('dragging');
+      });
+      item.addEventListener('dragover', function (e) {
+        e.preventDefault();
+      });
+      item.addEventListener('drop', function (e) {
+        e.preventDefault();
+        const targetIndex = parseInt(this.dataset.index);
+        if (draggedIndex !== null && draggedIndex !== targetIndex) {
+          const moved = galleryData.splice(draggedIndex, 1)[0];
+          galleryData.splice(targetIndex, 0, moved);
+          localStorage.setItem('galleryData', JSON.stringify(galleryData));
+          renderGallery();
+        }
+        draggedIndex = null;
+      });
+    });
+  }
+
+  function openPopup(src, type) {
+    popup.classList.add('flex');
+    popupMedia.innerHTML = '';
+    if (type.startsWith('image')) {
+      const zoomContainer = document.createElement('div');
+      zoomContainer.id = 'zoom-container';
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = '';
+      zoomContainer.appendChild(img);
+      popupMedia.appendChild(zoomContainer);
+      Panzoom(zoomContainer, { maxScale: 5 });
+    } else if (type.startsWith('video')) {
+      const video = document.createElement('video');
+      video.src = src;
+      video.controls = true;
+      video.autoplay = true;
+      video.style.maxWidth = '90vw';
+      video.style.maxHeight = '90vh';
+      popupMedia.appendChild(video);
+    }
+  }
+
+  function closePopup() {
+    popup.classList.remove('flex');
+    popupMedia.innerHTML = '';
+  }
+
+  popup.addEventListener('click', function (e) {
+    if (e.target === popup) closePopup();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closePopup();
+  });
+
+  renderGallery();
+  try {
+  localStorage.setItem('galleryData', JSON.stringify(galleryData));
+} catch (e) {
+  showToast("Storage full! Cannot save more files. Please delete old files.");
+  console.error("Storage limit reached:", e);
+}
+const themeSelect = document.getElementById('theme-select');
+  const themeToggle = document.getElementById('theme-toggle');
+
+  // Apply saved theme from localStorage
+  function applyTheme(theme) {
+    document.body.className = ''; // remove any existing theme
+    if (theme !== 'auto') {
+      document.body.classList.add(`${theme}-mode`);
+    }
+  }
+
+  // Load saved theme
+  const savedTheme = localStorage.getItem('theme') || 'auto';
+  themeSelect.value = savedTheme;
+  applyTheme(savedTheme);
+
+  // When select changes
+  themeSelect.addEventListener('change', (e) => {
+    const selectedTheme = e.target.value;
+    localStorage.setItem('theme', selectedTheme);
+    applyTheme(selectedTheme);
+  });
+
+  // Toggle between light/dark only with the moon button
+  themeToggle.addEventListener('click', () => {
+    let currentTheme = document.body.classList.contains('dark-mode') ? 'dark' : 'light';
+    let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    themeSelect.value = newTheme;
+    localStorage.setItem('theme', newTheme);
+    applyTheme(newTheme);
+  });
+  // Hamburger toggle
+const hamburger = document.querySelector('.hamburger');
+const navWrapper = document.querySelector('.nav-wrapper');
+
+hamburger.addEventListener('click', function (e) {
+  e.stopPropagation(); // avoid triggering document click
+  const isOpen = navWrapper.classList.contains('active');
+
+  if (isOpen) {
+    navWrapper.classList.remove('active');
+    hamburger.setAttribute('aria-expanded', false);
+  } else {
+    navWrapper.classList.add('active');
+    hamburger.setAttribute('aria-expanded', true);
+  }
+});
+
+
+  // Close navigation when clicking outside
+  document.querySelectorAll('.nav-menu a').forEach(link => {
+  link.addEventListener('click', () => {
+    document.querySelector('.nav-wrapper').classList.remove('active');
+    document.querySelector('.hamburger').setAttribute('aria-expanded', false);
+  });
+});
+  // Close auth form when clicking outside
+  document.addEventListener('click', function (event) {
+    const authForm = document.getElementById('auth-form');
+    if (!authForm.contains(event.target) && !document.getElementById('toggle-auth').contains(event.target)) {
+      authForm.classList.remove('auth-active');
+    }
+  });
+  document.addEventListener('click', function (event) {
+  const navWrapper = document.querySelector('.nav-wrapper');
+  const hamburger = document.querySelector('.hamburger');
+
+  const clickedInsideMenu = navWrapper.contains(event.target);
+  const clickedHamburger = hamburger.contains(event.target);
+
+  if (!clickedInsideMenu && !clickedHamburger) {
+    navWrapper.classList.remove('active');
+    hamburger.setAttribute('aria-expanded', false);
+  }
+});
+window.addEventListener('scroll', () => {
+  if (navWrapper.classList.contains('active')) {
+    navWrapper.classList.remove('active');
+    hamburger.setAttribute('aria-expanded', false);
+  }
+});
+  // Capture from camera
+  function captureFromCamera() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      return showToast("Camera not supported in this browser.");
+    }
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.play();
+        video.style.width = '100%';
+        video.style.height = 'auto';
+        popupMedia.innerHTML = '';
+        popupMedia.appendChild(video);
+        popup.classList.add('flex');
+
+        const captureBtn = document.createElement('button');
+        captureBtn.textContent = 'Capture Photo';
+        captureBtn.onclick = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(video, 0, 0);
+          const imgData = canvas.toDataURL('image/png');
+
+          galleryData.push({
+            title: `${titleInput.value.trim()} - ${new Date().toLocaleString().replace(/[/:]/g, '-')}`,
+            category: 'image',
+            type: 'image/png',
+            src: imgData,
+            createdAt: Date.now()
+          });
+          localStorage.setItem('galleryData', JSON.stringify(galleryData));
+          renderGallery();
+          closePopup();
+          showToast("Photo captured successfully.");
+          stream.getTracks().forEach(track => track.stop());
+        };
+        popupMedia.appendChild(captureBtn);
+      })
+      .catch(err => showToast("Error accessing camera: " + err.message));
+  }
+</script>
+  </body>
+  </html>

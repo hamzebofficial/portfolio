@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hamze | Portfolio</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <header class="top-header">
+    <div class="nav-bar">
+      <div class="logo-text">
+        <img src="Images/logo/H.png" alt="logo" class="logo-img" />
+      </div>
+        <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
+        <span class="hamburger-icon">&#9776;</span> <!-- ☰ -->
+        </button>
+      <div class="nav-wrapper">
+        <nav class="nav-menu" id="main-navigation" role="navigation" aria-label="Main navigation">
+          <a href="#about">About</a>
+          <a href="#projects">Projects</a>
+          <a href="#skills">Skills</a>
+          <a href="#contact">Contact</a>
+          <a href="#blog">Blog</a>
+          <a href="gallery.html">Gallery</a>
+          <span class="hamburger-auth" id="toggle-auth">👤<bold>Login</bold></span>
+        </nav>
+        <button id="theme-toggle" aria-label="Toggle light or dark mode" title="Toggle Theme">🌙</button>
+        <select id="theme-select" aria-label="Select theme">
+          <option value="auto">🌓 System</option>
+          <option value="dark">🌙 Dark</option>
+          <option value="light">☀️ Light</option>
+          <option value="blue">🔵 Blue</option>
+          <option value="green">🟢 Green</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <div id="auth-overlay"></div>
+  <section class="auth-form" id="auth-form">
+    <h3>Login</h3>
+    <form id="login-form">
+      <input type="text" name="username" placeholder="Username" required />
+      <div class="toggle-password">
+        <input type="password" name="password" placeholder="Password" id="login-password" required />
+        <button type="button" onclick="togglePasswordVisibility('login-password', this)">👁</button>
+      </div>
+      <button type="submit">Login</button>
+      <p id="login-message"></p>
+    </form>
+
+    <hr/>
+    <h3>Signup</h3>
+    <form id="signup-form">
+      <input type="text" name="newUsername" placeholder="New Username" required />
+      <div class="toggle-password">
+        <input type="password" name="newPassword" placeholder="New Password" id="signup-password" required />
+        <button type="button" onclick="togglePasswordVisibility('signup-password', this)">👁</button>
+      </div>
+      <button type="submit">Sign Up</button>
+      <p id="signup-message"></p>
+    </form>
+  </section>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Hello, I'm <span class="highlight">Hamze Serach</span></h1>
+      <p>
+        Welcome to my portfolio Website, I create websites with passion and purpose and
+        A curated collection that showcases my diverse skills, creativity, and experience
+        across various design disciplines. This portfolio reflects my journey as a developer,
+        highlighting projects that demonstrate my ability to blend aesthetics with functionality.
+      </p>
+      <a href="#projects" class="btn">See My Work</a>
+      <a href="resume.pdf" download class="btn" aria-label="Download Resume PDF">Download Resume</a>
+    </div>
+  </section>
+<div>
+  <img src="Images/logo/shape.png" alt="setItem" class="shape-img" />
+</div>
+  <section class="about" id="about">
+    <div class="container">
+      <h2>About Me</h2>
+      <p>I'm an aspiring web developer. I learned HTML and CSS through Udacity and YouTube. I enjoy turning ideas into interactive, user-friendly websites. I worked in data entry for eight years on platforms like Red Cup, DHIS2, Google Sheets, and Microsoft Excel. I can work as a Virtual Assistant, Web Researcher, and Data Organizer using spreadsheets. I also have excellent computer and internet skills. I'm experienced in extracting text from images and PDFs using OCR (Optical Character Recognition) tools. This portfolio showcases my journey and skills.</p>
+    </div>
+  </section>
+
+  <section class="projects" id="projects">
+    <div class="container">
+      <h2>My Projects</h2>
+      <div class="project-list">
+        <div class="project">
+          <h3>Excellent Website</h3>
+          <p>A responsive website using HTML & CSS.</p>
+        </div>
+        <div class="project">
+          <h3>Calculator</h3>
+          <p>A simple calculator made with JavaScript.</p>
+        </div>
+        <div class="project">
+          <h3>Logo</h3>
+          <p>A simple, beautiful logo.</p>
+        </div>
+        <div class="project">
+          <h3>Thumbnail</h3>
+          <p>YouTube thumbnail design.</p>
+        </div>
+        <div class="project">
+          <h3>Personal Blog</h3>
+          <p>Weekly Blog</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="skills" id="skills">
+    <div class="container">
+      <h2>My Skills</h2>
+      <ul class="skills-list">
+        <li>HTML</li>
+        <li>CSS</li>
+        <li>JavaScript (Basic)</li>
+        <li>Responsive Design</li>
+        <li>Basic Video Editing</li>
+        <li>Graphic Design (Logo Making)</li>
+        <li>Git & GitHub</li>
+      </ul>
+    </div>
+  </section>
+<section class="blog" id="blog">
+  <div class="container">
+    <h2>My Blog</h2>
+    <div id="blog-posts"></div>
+      <div class="blog-controls">
+        <form id="new-post-form" style="margin-top: 2rem;" enctype="multipart/form-data">
+          <input type="text" id="post-title" placeholder="Post Title" required />
+          <textarea id="post-content" placeholder="Write your post here..." required></textarea>
+          <!-- New media input -->
+          <label for="post-media">Attach image or video (optional):</label>
+          <input type="file" id="post-media" name="media" multiple accept="image/*,video/*" />
+          <div id="media-preview" style="margin-top: 1rem;"></div>
+          <button type="submit">Publish</button>
+          <button type="button" id="cancel-edit" style="display:none;">Cancel</button>
+          <p id="blog-message"></p>
+        </form>
+      </div>
+    <div class="blog-posts" id="blog-posts"></div>
+  </div>
+</section>
+<hr/>
+  <section id="contact" class="contact">
+    <div class="container">
+      <h2>Contact Me</h2>
+      <form id="contact-form">
+        <input type="text" name="name" placeholder="Your Name" required />
+        <input type="email" name="email" placeholder="Your Email" required />
+        <textarea name="message" placeholder="Your Message" required></textarea>
+        <button type="submit">Send</button>
+        <p id="form-message"></p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 Hamze Serach. All rights reserved.</p>
+      <div class="social-links">
+        <a href="https://facebook.com/hamzebofficial" target="_blank"><i class="fab fa-facebook fa-2x"></i></a>
+        <a href="https://instagram.com/hamzebofficial" target="_blank"><i class="fab fa-instagram fa-2x"></i></a>
+        <a href="https://linkedin.com/in/hserach2023" target="_blank"><i class="fab fa-linkedin fa-2x"></i></a>
+        <!-- YouTube -->
+        <a href="https://youtube.com/@hamzebofficial" target="_blank"><i class="fab fa-youtube fa-2x"></i></a>
+        <!-- TikTok -->
+        <a href="https://tiktok.com/@hamzefunn" target="_blank"><i class="fab fa-tiktok fa-2x"></i></a>
+        <!-- GitHub -->
+        <a href="https://github.com/hamzebofficial" target="_blank"><i class="fab fa-github fa-2x"></i></a>
+        <!-- Telegram -->
+        <a href="https://t.me/@hamzebofficial" target="_blank"><i class="fab fa-telegram fa-2x"></i></a>
+        <!-- WhatsApp -->
+        <a href="https://wa.me/+251910694724" target="_blank"><i class="fab fa-whatsapp fa-2x"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  const BASE_URL = 'https://portfolio-vy5i.onrender.com'; // ✅ Easily change this if hosted elsewhere
+
+  function togglePasswordVisibility(id, btn) {
+    const input = document.getElementById(id);
+    input.type = input.type === 'password' ? 'text' : 'password';
+    btn.textContent = input.type === 'text' ? '🙈' : '👁';
+  }
+
+  document.getElementById('toggle-auth').addEventListener('click', () => {
+    document.getElementById('auth-form').classList.toggle('auth-active');
+  });
+
+  // Login
+  document.getElementById('login-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const username = this.username.value;
+    const password = this.password.value;
+    const msg = document.getElementById('login-message');
+
+    try {
+      const res = await fetch(`${BASE_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const result = await res.json();
+
+      if (res.ok) {
+        localStorage.setItem('authUser', username);
+        msg.textContent = 'Login successful!';
+        msg.style.color = 'green';
+      } else {
+        msg.textContent = result.message || 'Login failed.';
+        msg.style.color = 'red';
+      }
+    } catch (err) {
+      msg.textContent = 'Server error.';
+      console.error(err);
+    }
+  });
+
+  // Signup
+  document.getElementById('signup-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const username = this.newUsername.value;
+    const password = this.newPassword.value;
+    const msg = document.getElementById('signup-message');
+
+    try {
+      const res = await fetch(`${BASE_URL}/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const result = await res.json();
+
+      if (res.ok) {
+        msg.textContent = 'Signup successful! You can now log in.';
+        msg.style.color = 'green';
+      } else {
+        msg.textContent = result.message || 'Signup failed.';
+        msg.style.color = 'red';
+      }
+    } catch (err) {
+      msg.textContent = 'Server error.';
+      console.error(err);
+    }
+  });
+
+  // Theme toggle logic (unchanged)
+  const themeSelect = document.getElementById('theme-select');
+  const themeToggle = document.getElementById('theme-toggle');
+  function applyTheme(theme) {
+    document.body.className = '';
+    if (theme !== 'auto') document.body.classList.add(`${theme}-mode`);
+  }
+  const savedTheme = localStorage.getItem('theme') || 'auto';
+  themeSelect.value = savedTheme;
+  applyTheme(savedTheme);
+  themeSelect.addEventListener('change', e => {
+    localStorage.setItem('theme', e.target.value);
+    applyTheme(e.target.value);
+  });
+  themeToggle.addEventListener('click', () => {
+    const newTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+    themeSelect.value = newTheme;
+    localStorage.setItem('theme', newTheme);
+    applyTheme(newTheme);
+  });
+
+  // Hamburger menu toggle
+  const hamburger = document.querySelector('.hamburger');
+  const navWrapper = document.querySelector('.nav-wrapper');
+  hamburger.addEventListener('click', function (e) {
+    e.stopPropagation();
+    navWrapper.classList.toggle('active');
+    this.setAttribute('aria-expanded', navWrapper.classList.contains('active'));
+  });
+
+  document.querySelectorAll('.nav-menu a').forEach(link => {
+    link.addEventListener('click', () => {
+      navWrapper.classList.remove('active');
+      hamburger.setAttribute('aria-expanded', false);
+    });
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!document.getElementById('auth-form').contains(e.target) &&
+        !document.getElementById('toggle-auth').contains(e.target)) {
+      document.getElementById('auth-form').classList.remove('auth-active');
+    }
+
+    if (!navWrapper.contains(e.target) && !hamburger.contains(e.target)) {
+      navWrapper.classList.remove('active');
+      hamburger.setAttribute('aria-expanded', false);
+    }
+  });
+
+  window.addEventListener('scroll', () => {
+    navWrapper.classList.remove('active');
+    hamburger.setAttribute('aria-expanded', false);
+  });
+
+  // Fetch and display blog posts
+  async function fetchPosts() {
+    try {
+      const res = await fetch(`${BASE_URL}/blog`);
+      const posts = await res.json();
+      const container = document.getElementById('blog-posts');
+      container.innerHTML = '';
+
+      const currentUser = localStorage.getItem('authUser');
+
+posts.forEach(post => {
+  const postEl = document.createElement('div');
+  postEl.classList.add('blog-post');
+  postEl.dataset.id = post.id;
+
+  let mediaHTML = '';
+  if (Array.isArray(post.media)) {
+    for (const file of post.media) {
+      const mediaUrl = `/uploads/${file}`;
+      if (file.endsWith('.mp4')) {
+        mediaHTML += `<video src="${mediaUrl}" controls style="max-width: 100%; margin-top: 10px;"></video>`;
+      } else {
+        mediaHTML += `<img src="${mediaUrl}" alt="" style="max-width: 100%; margin-top: 10px;">`;
+      }
+    }
+  }
+
+  const canEdit = post.owner === currentUser; // 👈 check ownership
+  const editButtons = canEdit
+    ? `<button onclick="startEdit(${post.id})">✏️ Edit</button>
+       <button onclick="deletePost(${post.id})">🗑️ Delete</button>`
+    : '';
+
+  postEl.innerHTML = `
+    <h3>${post.title}</h3>
+    <p>${post.content}</p>
+    ${mediaHTML}
+    <div class="post-buttons">
+      ${editButtons}
+    </div>
+  `;
+
+  container.appendChild(postEl);
+});
+
+    } catch (err) {
+      console.error('❌ Failed to fetch posts:', err);
+    }
+  }
+
+  // Blog post submission
+  document.getElementById('new-post-form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  const title = document.getElementById('post-title').value;
+  const content = document.getElementById('post-content').value;
+  const fileInput = document.getElementById('post-media');
+
+  const files = fileInput.files;
+  const uploadFiles = Array.from(files); // Convert FileList to array
+  let uploadedMedia = [];
+  const msg = document.getElementById('blog-message');
+
+  try {
+    for (const file of uploadFiles) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('title', title);
+      formData.append('category', 'blog');
+
+      const uploadRes = await fetch('/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      const uploadResult = await uploadRes.json();
+
+      if (!uploadRes.ok) throw new Error(uploadResult.error || 'Upload failed');
+
+      uploadedMedia.push(uploadResult.filename); // Save filename
+    }
+  const username = localStorage.getItem('authUser'); // 👈 get logged-in user
+    const blogRes = await fetch(`${BASE_URL}/blog`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ title, content, media: uploadedMedia, username }) // 👈 include username
+});
+    if (res.ok) {
+      msg.textContent = 'Post published!';
+      msg.style.color = 'green';
+      this.reset();
+      document.getElementById('media-preview').innerHTML = '';
+      fetchPosts(); // Refresh post list
+    } else {
+      const error = await res.json();
+      msg.textContent = error.message || 'Failed to publish.';
+      msg.style.color = 'red';
+    }
+  } catch (err) {
+    console.error('❌ Blog post error:', err);
+    msg.textContent = err.message || 'Server error';
+    msg.style.color = 'red';
+  }
+});
+
+  // Blog editing and deletion
+  let editingId = null;
+  window.startEdit = function (id) {
+    const postEl = document.querySelector(`.blog-post[data-id="${id}"]`);
+    document.getElementById('post-title').value = postEl.querySelector('h3').innerText;
+    document.getElementById('post-content').value = postEl.querySelector('p').innerText;
+    editingId = id;
+    document.getElementById('cancel-edit').style.display = 'inline-block';
+  };
+
+  document.getElementById('cancel-edit').addEventListener('click', () => {
+    editingId = null;
+    document.getElementById('new-post-form').reset();
+    document.getElementById('cancel-edit').style.display = 'none';
+  });
+
+  window.deletePost = async function deletePost(id) {
+  if (!confirm('Delete this post?')) return;
+
+  const username = localStorage.getItem('authUser');
+
+  const res = await fetch(`${BASE_URL}/blog/${id}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username }) // 👈 send user info
+  });
+
+  if (res.ok) fetchPosts();
+};
+
+  // Media preview
+  document.getElementById('post-media').addEventListener('change', function () {
+    const file = this.files[0];
+    const preview = document.getElementById('media-preview');
+    preview.innerHTML = '';
+    if (file) {
+      const url = URL.createObjectURL(file);
+      preview.innerHTML = file.type.startsWith('image')
+        ? `<img src="${url}" style="max-width: 200px;"/>`
+        : `<video src="${url}" controls style="max-width: 300px;"></video>`;
+    }
+  });
+
+  // Initial fetch
+  window.addEventListener('DOMContentLoaded', fetchPosts);
+
+document.getElementById('new-post-form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  const title = document.getElementById('post-title').value;
+  const content = document.getElementById('post-content').value;
+  const fileInput = document.getElementById('post-media');
+
+  const files = fileInput.files;
+  const uploadFiles = Array.from(files); // Convert FileList to array
+  let uploadedMedia = [];
+  const msg = document.getElementById('blog-message');
+
+  try {
+    // 1. Upload each media file to backend
+    for (const file of uploadFiles) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('title', title);
+      formData.append('category', 'blog');
+
+      const uploadRes = await fetch(`${BASE_URL}/upload`, {
+        method: 'POST',
+        body: formData
+      });
+
+      const uploadResult = await uploadRes.json();
+      if (!uploadRes.ok) throw new Error(uploadResult.error || 'Upload failed');
+
+      uploadedMedia.push(uploadResult.filename); // Save uploaded filename
+    }
+
+    // 2. Submit blog post with title, content, and uploaded media filenames
+    const res = await fetch(`${BASE_URL}/blog`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, content, media: uploadedMedia })
+    });
+
+    if (res.ok) {
+      msg.textContent = 'Post published!';
+      msg.style.color = 'green';
+      this.reset();
+      document.getElementById('media-preview').innerHTML = '';
+      fetchPosts(); // Refresh post list
+    } else {
+      const error = await res.json();
+      msg.textContent = error.message || 'Failed to publish.';
+      msg.style.color = 'red';
+    }
+
+  } catch (err) {
+    console.error('❌ Blog post error:', err);
+    msg.textContent = err.message || 'Server error';
+    msg.style.color = 'red';
+  }
+});
+</script>
+</body>
+</html>
